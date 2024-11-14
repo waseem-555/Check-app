@@ -1,5 +1,5 @@
 import streamlit as st
-from PyPDF2 import PdfReader
+import fitz  # PyMuPDF
 import faiss
 from sentence_transformers import SentenceTransformer
 import numpy as np
@@ -10,9 +10,10 @@ model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniL
 # Step 1: Extract text from PDF
 def extract_text_from_pdf(pdf_path):
     text = ""
-    reader = PdfReader(pdf_path)
-    for page in reader.pages:
-        text += page.extract_text() or ""  # Use an empty string if extract_text() returns None
+    with fitz.open(pdf_path) as pdf:
+        for page_num in range(len(pdf)):
+            page = pdf[page_num]
+            text += page.get_text()
     return text
 
 # Step 2: Split text into chunks
