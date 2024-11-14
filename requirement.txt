@@ -43,4 +43,4 @@ typing-extensions==4.12.2
 tzdata[2024-11-14 08:53:59.939962] ==2024.2
 urllib3==2.2.3
 watchdog==6.0.0
-pymupdf
+pymupdf==1.22.0

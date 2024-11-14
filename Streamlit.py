@@ -99,15 +99,14 @@ if uploaded_file:
 
     # Paths to existing dataset of PDF files
     dataset_pdf_paths = [
-        "C:/Users/Scorpbit/Downloads/pdf1.pdf",
-        "C:/Users/Scorpbit/Downloads/pdf2.pdf",
-        "C:/Users/Scorpbit/Downloads/pdf3.pdf",
-        "C:/Users/Scorpbit/Downloads/pdf4.pdf",
-        "C:/Users/Scorpbit/Downloads/pdf5.pdf",
-        "C:/Users/Scorpbit/Downloads/pdf6.pdf",
-        "C:/Users/Scorpbit/Downloads/pdf7.pdf",
-        "C:/Users/Scorpbit/Downloads/pdf8.pdf",
-        "C:/Users/Scorpbit/Downloads/pdf9.pdf"
+        "/workspaces/Check-app/data/pdf1.pdf",
+        "/workspaces/Check-app/data/pdf2.pdf",
+        "/workspaces/Check-app/data/pdf3.pdf",
+        "/workspaces/Check-app/data/pdf4.pdf",
+        "/workspaces/Check-app/data/pdf5.pdf",
+        "/workspaces/Check-app/data/pdf6.pdf",
+        "/workspaces/Check-app/data/pdf7.pdf",
+        "/workspaces/Check-app/data/pdf8.pdf"
     ]
     faiss_index, chunk_info = build_faiss_index(dataset_pdf_paths)
 
