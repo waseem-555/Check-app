@@ -45,3 +45,4 @@ urllib3==2.2.3
 watchdog==6.0.0
 pymupdf==1.22.3
 --upgrade pymupdf
+pdfplumber
