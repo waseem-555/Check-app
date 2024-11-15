@@ -16,7 +16,7 @@ markdown-it-py==3.0.0
 markupsafe==3.0.2
 mdurl==0.1.2
 narwhals==1.13.5
-numpy==1.23.5
+numpy==1.25.2
 packaging==24.2
 pandas==2.2.3
 pillow==11.0.0
@@ -39,3 +39,5 @@ typing-extensions==4.12.2
 tzdata==2024.2
 urllib3==2.2.3
 watchdog==6.0.0
+faiss-cpu==1.9.0
+nipype==1.9.0
