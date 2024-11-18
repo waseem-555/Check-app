@@ -8,6 +8,11 @@ import os
 # Load a multilingual embedding model
 model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 
+# Directory to store PDFs
+DATA_DIR = "data"
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+
 # Step 1: Extract text from PDF
 def extract_text_from_pdf(pdf_path):
     text = ""
@@ -90,45 +95,52 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Upload and store PDFs
+st.subheader("Add PDFs to the Dataset")
 uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
-
 if uploaded_file:
-    # Save the uploaded file temporarily
-    with open("temp_submitted.pdf", "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    file_name = uploaded_file.name
+    if not file_name.endswith(".pdf"):
+        st.error("Only PDF format is accepted.")
+    else:
+        save_path = os.path.join(DATA_DIR, file_name)
+        with open(save_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        st.success(f"File '{file_name}' has been added to the data folder.")
 
-    # Paths to existing dataset of PDF files
-    base_dir = os.path.dirname(__file__)  # Directory of the current script
-    dataset_pdf_paths = [
-    os.path.join(base_dir, "data/pdf1.pdf"),
-    os.path.join(base_dir, "data/pdf2.pdf"),
-    os.path.join(base_dir, "data/pdf3.pdf"),
-    os.path.join(base_dir, "data/pdf4.pdf"),
-    os.path.join(base_dir, "data/pdf5.pdf"),
-    os.path.join(base_dir, "data/pdf6.pdf"),
-    os.path.join(base_dir, "data/pdf7.pdf"),
-    os.path.join(base_dir, "data/pdf8.pdf"),
-]
+# Dynamically fetch all PDF files in the data folder
+dataset_pdf_paths = [os.path.join(DATA_DIR, pdf) for pdf in os.listdir(DATA_DIR) if pdf.endswith(".pdf")]
+
+if dataset_pdf_paths:
+    # Build FAISS index with all available PDFs
     faiss_index, chunk_info = build_faiss_index(dataset_pdf_paths)
 
-    # Check for similarity
-    similar_content = check_plagiarism("temp_submitted.pdf", faiss_index, chunk_info)
+    # Upload a PDF for similarity check
+    st.subheader("Check Similarity")
+    similarity_file = st.file_uploader("Upload a PDF file to check similarity", type="pdf")
+    if similarity_file:
+        with open("temp_submitted.pdf", "wb") as f:
+            f.write(similarity_file.getbuffer())
+        similar_content = check_plagiarism("temp_submitted.pdf", faiss_index, chunk_info)
 
-    if similar_content:
-        st.success("Similar Content Found:")
-    # Display results in tabs
-        for match in similar_content[:2]:  # Limit to top 2 results
-            tabs = st.tabs(["Submitted Chunk", "Matched Chunk"])
-            with tabs[0]:
-                st.markdown(f"<div class='tab-style'>{match['submitted_chunk']}</div>", unsafe_allow_html=True)
-            with tabs[1]:
-                st.markdown(f"<div class='tab-style'>Matched PDF: {match['matched_pdf']}<br>{match['matched_chunk']}</div>", unsafe_allow_html=True)
-        
-        # Display the similarity score in red color
-            st.markdown(
-                f"<p style='color: red; font-weight: bold;'>Similarity Score: {match['similarity']:.2f}</p>", 
-                unsafe_allow_html=True
-        )
+        if similar_content:
+            st.success("Similar Content Found:")
+            # Display results in tabs
+            for match in similar_content[:2]:  # Limit to top 2 results
+                tabs = st.tabs(["Submitted Chunk", "Matched Chunk"])
+                with tabs[0]:
+                    st.markdown(f"<div class='tab-style'>{match['submitted_chunk']}</div>", unsafe_allow_html=True)
+                with tabs[1]:
+                    st.markdown(
+                        f"<div class='tab-style'>Matched PDF: {os.path.basename(match['matched_pdf'])}<br>{match['matched_chunk']}</div>",
+                        unsafe_allow_html=True,
+                    )
+                # Display the similarity score in red color
+                st.markdown(
+                    f"<p style='color: red; font-weight: bold;'>Similarity Score: {match['similarity']:.2f}</p>",
+                    unsafe_allow_html=True,
+                )
+        else:
+            st.warning("No similar content found.")
 else:
-    st.warning("No similar content found.")
-
+    st.warning("No PDF files found in the data directory.")
