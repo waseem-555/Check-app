@@ -3,6 +3,7 @@ import pdfplumber
 import faiss
 from sentence_transformers import SentenceTransformer
 import numpy as np
+import os
 
 # Load a multilingual embedding model
 model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
@@ -97,16 +98,17 @@ if uploaded_file:
         f.write(uploaded_file.getbuffer())
 
     # Paths to existing dataset of PDF files
+    base_dir = os.path.dirname(__file__)  # Directory of the current script
     dataset_pdf_paths = [
-        "workspaces/Check-app/data/pdf1.pdf",
-        "workspaces/Check-app/data/pdf2.pdf",
-        "workspaces/Check-app/data/pdf3.pdf",
-        "workspaces/Check-app/data/pdf4.pdf",
-        "workspaces/Check-app/data/pdf5.pdf",
-        "workspaces/Check-app/data/pdf6.pdf",
-        "workspaces/Check-app/data/pdf7.pdf",
-        "workspaces/Check-app/data/pdf8.pdf"
-    ]
+    os.path.join(base_dir, "data/pdf1.pdf"),
+    os.path.join(base_dir, "data/pdf2.pdf"),
+    os.path.join(base_dir, "data/pdf3.pdf"),
+    os.path.join(base_dir, "data/pdf4.pdf"),
+    os.path.join(base_dir, "data/pdf5.pdf"),
+    os.path.join(base_dir, "data/pdf6.pdf"),
+    os.path.join(base_dir, "data/pdf7.pdf"),
+    os.path.join(base_dir, "data/pdf8.pdf"),
+]
     faiss_index, chunk_info = build_faiss_index(dataset_pdf_paths)
 
     # Check for similarity
