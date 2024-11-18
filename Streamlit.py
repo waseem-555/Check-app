@@ -55,8 +55,8 @@ def check_plagiarism(submitted_pdf_path, faiss_index, chunk_info, threshold=0.20
         embedding = np.array([embedding]).astype("float32")
         distances, indices = faiss_index.search(embedding, k=top_k)
         for dist, idx in zip(distances[0], indices[0]):
-            similarity = 1 - (dist / 2)  # Cosine similarity approximation
-            if similarity >= threshold:
+            similarity = (1 - (dist / 2)) * 100  # Convert to percentage
+            if similarity >= threshold * 100:
                 matched_pdf_path, matched_chunk = chunk_info[idx]
                 results.append({
                     "submitted_chunk": chunk,
@@ -67,20 +67,20 @@ def check_plagiarism(submitted_pdf_path, faiss_index, chunk_info, threshold=0.20
     return results
 
 # Streamlit interface
-st.set_page_config(page_title="Program Similarity Checker", layout="wide")
+st.set_page_config(page_title="Program Similarity Checker", layout="centered")
 st.title("Program Similarity Checker")
 
-# Sidebar: Display list of files in the `data` folder
-st.sidebar.header("Uploaded PDFs")
-pdf_files = [pdf for pdf in os.listdir(DATA_DIR) if pdf.endswith(".pdf")]
-if pdf_files:
-    st.sidebar.markdown("### PDF Files in Data Folder:")
-    for pdf in pdf_files:
-        st.sidebar.write(f"- {pdf}")
+# Sidebar to show uploaded files
+st.sidebar.header("Uploaded Files")
+uploaded_files = os.listdir(DATA_DIR)
+if uploaded_files:
+    st.sidebar.write("### Stored PDFs:")
+    for file in uploaded_files:
+        st.sidebar.write(f"- {file}")
 else:
-    st.sidebar.warning("No PDFs in the data folder.")
+    st.sidebar.write("No files uploaded yet.")
 
-# Add custom CSS for styling the tabs like paper pages
+# Add custom CSS for styling the tabs
 st.markdown(
     """
     <style>
@@ -91,14 +91,6 @@ st.markdown(
         border-radius: 8px;
         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         font-family: Arial, sans-serif;
-    }
-    .stTabs [data-baseweb="tab-list"] button {
-        background-color: #fff;
-        font-size: 1.1rem;
-        padding: 0.6rem;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
     }
     </style>
     """,
@@ -135,19 +127,33 @@ if dataset_pdf_paths:
 
         if similar_content:
             st.success("Similar Content Found:")
-            # Display results in tabs
+            # Display results in tabs with Arabic support
             for match in similar_content[:2]:  # Limit to top 2 results
                 tabs = st.tabs(["Submitted Chunk", "Matched Chunk"])
                 with tabs[0]:
-                    st.markdown(f"<div class='tab-style'>{match['submitted_chunk']}</div>", unsafe_allow_html=True)
-                with tabs[1]:
                     st.markdown(
-                        f"<div class='tab-style'>Matched PDF: {os.path.basename(match['matched_pdf'])}<br>{match['matched_chunk']}</div>",
+                        f"""
+                        <div class='tab-style' style="direction: rtl; text-align: right; font-family: 'Arial', sans-serif;">
+                        {match['submitted_chunk']}
+                        </div>
+                        """,
                         unsafe_allow_html=True,
                     )
-                # Display the similarity score in red color
+                with tabs[1]:
+                    st.markdown(
+                        f"""
+                        <div class='tab-style' style="direction: rtl; text-align: right; font-family: 'Arial', sans-serif;">
+                        Matched PDF: {os.path.basename(match['matched_pdf'])}<br>{match['matched_chunk']}
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
                 st.markdown(
-                    f"<p style='color: red; font-weight: bold;'>Similarity Score: {match['similarity']:.2f}</p>",
+                    f"""
+                    <p style='color: red; font-weight: bold; direction: rtl; text-align: right; font-family: "Arial", sans-serif;">
+                    Similarity Score: {match['similarity']:.2f}%
+                    </p>
+                    """,
                     unsafe_allow_html=True,
                 )
         else:
