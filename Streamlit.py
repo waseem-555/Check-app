@@ -67,8 +67,18 @@ def check_plagiarism(submitted_pdf_path, faiss_index, chunk_info, threshold=0.20
     return results
 
 # Streamlit interface
-st.set_page_config(page_title="Program Similarity Checker", layout="centered")
+st.set_page_config(page_title="Program Similarity Checker", layout="wide")
 st.title("Program Similarity Checker")
+
+# Sidebar: Display list of files in the `data` folder
+st.sidebar.header("Uploaded PDFs")
+pdf_files = [pdf for pdf in os.listdir(DATA_DIR) if pdf.endswith(".pdf")]
+if pdf_files:
+    st.sidebar.markdown("### PDF Files in Data Folder:")
+    for pdf in pdf_files:
+        st.sidebar.write(f"- {pdf}")
+else:
+    st.sidebar.warning("No PDFs in the data folder.")
 
 # Add custom CSS for styling the tabs like paper pages
 st.markdown(
