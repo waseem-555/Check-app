@@ -2,3 +2,6 @@ libgl1-mesa-glx
 libglib2.0-0
 python3-distutils
 libpoppler-cpp-dev
+python3-pip
+python3-dev
+libpoppler-cpp-dev
