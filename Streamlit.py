@@ -80,7 +80,7 @@ if uploaded_files:
 else:
     st.sidebar.write("No files uploaded yet.")
 
-# Add custom CSS for styling the tabs
+# Add custom CSS for styling
 st.markdown(
     """
     <style>
@@ -91,6 +91,11 @@ st.markdown(
         border-radius: 8px;
         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         font-family: Arial, sans-serif;
+    }
+    .red-highlight {
+        color: red;
+        font-weight: bold;
+        font-size: 1.1rem;
     }
     </style>
     """,
@@ -127,7 +132,7 @@ if dataset_pdf_paths:
 
         if similar_content:
             st.success("Similar Content Found:")
-            # Display results in tabs with Arabic support
+            # Display results in tabs with red-highlighted similarity score
             for match in similar_content[:2]:  # Limit to top 2 results
                 tabs = st.tabs(["Submitted Chunk", "Matched Chunk"])
                 with tabs[0]:
@@ -136,6 +141,12 @@ if dataset_pdf_paths:
                         <div class='tab-style' style="direction: rtl; text-align: right; font-family: 'Arial', sans-serif;">
                         {match['submitted_chunk']}
                         </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                    st.markdown(
+                        f"""
+                        <p class='red-highlight'>Similarity Score: {match['similarity']:.2f}%</p>
                         """,
                         unsafe_allow_html=True,
                     )
@@ -148,14 +159,6 @@ if dataset_pdf_paths:
                         """,
                         unsafe_allow_html=True,
                     )
-                st.markdown(
-                    f"""
-                    <p style='color: red; font-weight: bold; direction: rtl; text-align: right; font-family: "Arial", sans-serif;">
-                    Similarity Score: {match['similarity']:.2f}%
-                    </p>
-                    """,
-                    unsafe_allow_html=True,
-                )
         else:
             st.warning("No similar content found.")
 else:
