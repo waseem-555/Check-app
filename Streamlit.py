@@ -97,6 +97,11 @@ st.markdown(
         font-weight: bold;
         font-size: 1.1rem;
     }
+    .arabic-text {
+        unicode-bidi: bidi-override;
+        font-family: 'Arial', sans-serif;
+        white-space: pre-wrap;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -138,7 +143,7 @@ if dataset_pdf_paths:
                 with tabs[0]:
                     st.markdown(
                         f"""
-                        <div class='tab-style' style="direction: rtl; text-align: right; font-family: 'Arial', sans-serif;">
+                        <div class='tab-style arabic-text'>
                         {match['submitted_chunk']}
                         </div>
                         """,
@@ -153,7 +158,7 @@ if dataset_pdf_paths:
                 with tabs[1]:
                     st.markdown(
                         f"""
-                        <div class='tab-style' style="direction: rtl; text-align: right; font-family: 'Arial', sans-serif;">
+                        <div class='tab-style arabic-text'>
                         Matched PDF: {os.path.basename(match['matched_pdf'])}<br>{match['matched_chunk']}
                         </div>
                         """,
