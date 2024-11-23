@@ -70,13 +70,22 @@ def check_plagiarism(submitted_pdf_path, faiss_index, chunk_info, threshold=0.20
 st.set_page_config(page_title="Program Similarity Checker", layout="centered")
 st.title("Program Similarity Checker")
 
-# Sidebar to show uploaded files
+# Sidebar to show uploaded files and delete option
 st.sidebar.header("Uploaded Files")
 uploaded_files = os.listdir(DATA_DIR)
 if uploaded_files:
     st.sidebar.write("### Stored PDFs:")
     for file in uploaded_files:
-        st.sidebar.write(f"- {file}")
+        # Display each file and a delete button
+        col1, col2 = st.sidebar.columns([4, 1])
+        with col1:
+            st.sidebar.write(f"- {file}")
+        with col2:
+            if st.sidebar.button(f"Delete {file}", key=file):
+                os.remove(os.path.join(DATA_DIR, file))
+                st.sidebar.write(f"File '{file}' has been deleted.")
+                # Rebuild the list after deletion
+                uploaded_files = os.listdir(DATA_DIR)
 else:
     st.sidebar.write("No files uploaded yet.")
 
